@@ -1,0 +1,39 @@
+name: release
+
+# 打 tag（v*）即发布：构建 Windows 安装包 + 更新签名产物 + latest.json，
+# 供 tauri-plugin-updater 自更新使用。
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend deps
+        run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 在仓库 Settings → Secrets 里配置（私钥内容或路径 + 可选口令）
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "宿舍游戏库 ${{ github.ref_name }}"
+          releaseBody: "见仓库 CHANGELOG / 提交记录。"
+          releaseDraft: true
+          prerelease: false

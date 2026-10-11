@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-10T00:00:00Z",
+  "games": [
+    {
+      "id": "dorm-monopoly",
+      "name": "宿舍大富翁",
+      "summary": "宿舍主题的大富翁棋牌游戏，支持 1~4 人联机。",
+      "description": "用 Godot 4.6 制作的宿舍主题大富翁：56 格棋盘铺在宿舍桌上，滚轮在 3D 围桌与 2D 桌面之间推拉，转盘决定步数，买地、装修、收租、抽事件卡，30 轮后身家最高或活到最后者赢。支持同一局域网 4 人联机与 IPv6 直连。",
+      "cover": "https://raw.githubusercontent.com/Lousync/dorm-monopoly/main/doc/screenshots/01_table_3d.png",
+      "screenshots": [
+        "https://raw.githubusercontent.com/Lousync/dorm-monopoly/main/doc/screenshots/01_table_3d.png",
+        "https://raw.githubusercontent.com/Lousync/dorm-monopoly/main/doc/screenshots/02_room_far.png",
+        "https://raw.githubusercontent.com/Lousync/dorm-monopoly/main/doc/screenshots/03_table_2d.png",
+        "https://raw.githubusercontent.com/Lousync/dorm-monopoly/main/doc/screenshots/04_lobby.png"
+      ],
+      "source": {
+        "type": "github-releases",
+        "repo": "Lousync/dorm-monopoly",
+        "tagPrefix": "v",
+        "assetPattern": "^DormMonopoly_v?(?<version>.+?)\\.zip$"
+      },
+      "executable": "DormMonopoly.exe",
+      "args": [],
+      "userDataNote": "存档与设置位于 %APPDATA%\\Godot\\app_userdata 下，切换版本不会丢失。",
+      "latest": {
+        "version": "0.13.1",
+        "url": "https://github.com/Lousync/dorm-monopoly/releases/download/v0.13.1/DormMonopoly_v0.13.1.zip",
+        "sha256": "eaa9eecc0843124f1d112a09d38c12494af7b274c66e0e31c6b771f4020a3189",
+        "size": 57671527,
+        "publishedAt": "2026-10-07T12:35:17Z",
+        "notes": "宿舍大富翁 0.13.1"
+      },
+      "versions": [
+        {
+          "version": "0.13.1",
+          "url": "https://github.com/Lousync/dorm-monopoly/releases/download/v0.13.1/DormMonopoly_v0.13.1.zip",
+          "sha256": "eaa9eecc0843124f1d112a09d38c12494af7b274c66e0e31c6b771f4020a3189",
+          "size": 57671527,
+          "publishedAt": "2026-10-07T12:35:17Z"
+        },
+        {
+          "version": "0.13.0",
+          "url": "https://github.com/Lousync/dorm-monopoly/releases/download/v0.13.0/DormMonopoly_v0.13.0.zip",
+          "sha256": "593721702710d94754e9bb5adb9e2a1e161112a286da91434a6eed8100a1c60e",
+          "size": 57668000,
+          "publishedAt": "2026-10-07T10:20:17Z"
+        },
+        {
+          "version": "0.12.0",
+          "url": "https://github.com/Lousync/dorm-monopoly/releases/download/v0.12.0/DormMonopoly_v0.12.0.zip",
+          "sha256": "d34b2f399fe49442e749688c2f83c15056427c86c41e4a8b6c357bc548718ffa",
+          "size": 54859699,
+          "publishedAt": "2026-10-07T03:28:50Z"
+        }
+      ]
+    }
+  ]
+}

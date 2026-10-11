@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>宿舍游戏库 · 界面原型</title>
+<style>
+  /* 说明：本原型刻意避免 CSS 变量 / 全屏 flex 高度 / calc() / gap / aspect-ratio，
+     以兼容较旧的浏览器。所有区块默认全部可见，JS 只负责切换显示。 */
+  body{
+    margin:0; padding:0; background:#16171b; color:#e8e6e1;
+    font-family:"Microsoft YaHei UI","Microsoft YaHei","PingFang SC",sans-serif;
+    font-size:15px; line-height:1.6;
+  }
+  .proto{ background:#0f1013; border-bottom:1px solid #2c2f37; padding:8px 14px; font-size:13px; }
+  .proto b{ color:#d9a441; margin-right:10px; }
+  .proto .hint{ color:#6b7078; }
+  .wrap{ max-width:1160px; margin:0 auto; padding:20px 22px 60px; }
+
+  h2{ font-size:22px; margin:0 0 16px; }
+  h3{ font-size:15px; margin:22px 0 10px; }
+  .muted{ color:#8a8f9a; }
+  .small{ font-size:12.5px; }
+
+  button{
+    font-family:inherit; font-size:13px; cursor:pointer;
+    background:#26282f; color:#e8e6e1; border:1px solid #3a3e48;
+    border-radius:9px; padding:8px 15px;
+  }
+  button:hover{ border-color:#d9a441; color:#d9a441; }
+  button.primary{ background:#d9a441; border-color:#d9a441; color:#1a1407; font-weight:700; }
+  button.danger{ color:#f0a3a3; }
+  button.primary:hover{ color:#1a1407; }
+  button[disabled]{ opacity:.5; cursor:default; border-color:#3a3e48; color:#8a8f9a; }
+
+  .badge{ font-size:12px; padding:1px 9px; border-radius:11px; border:1px solid #8a8f9a; color:#8a8f9a; white-space:nowrap; }
+  .badge.ok{ color:#4cae7a; border-color:#4cae7a; }
+  .badge.new{ color:#d9a441; border-color:#a37b2c; }
+  .badge.inst{ color:#5b8dd6; border-color:#5b8dd6; }
+
+  /* 卡片：用 inline-block 排布，兼容性最好 */
+  .grid{ font-size:0; }
+  .card{
+    display:inline-block; vertical-align:top; font-size:15px;
+    width:320px; margin:0 14px 14px 0;
+    background:#1e2025; border:1px solid #2c2f37; border-radius:12px; overflow:hidden;
+  }
+  .card .cover{ height:150px; background:#30343d; position:relative; }
+  .card .cover img{ width:100%; height:150px; object-fit:cover; display:block; }
+  .card .cover .ph{ text-align:center; line-height:150px; font-size:40px; color:#8a8f9a; }
+  .card .cover .badge{ position:absolute; top:10px; right:10px; background:#0f1013; }
+  .card .body{ padding:12px 14px; }
+  .card .title{ font-size:16px; font-weight:700; margin-bottom:4px; }
+  .card .sub{ color:#8a8f9a; font-size:12.5px; height:38px; overflow:hidden; }
+  .card .meta{ color:#6b7078; font-size:12px; margin-top:8px; }
+  .card .meta span{ margin-right:14px; }
+  .card .actions{ padding:0 14px 14px; }
+  .card .actions button{ margin-right:8px; }
+  .ghostcard{ border-style:dashed; color:#6b7078; text-align:center; padding:70px 0; font-size:14px; }
+  .ghostcard .big{ font-size:30px; }
+
+  /* 详情 */
+  .hero{ position:relative; height:240px; border:1px solid #2c2f37; border-radius:12px; overflow:hidden; background:#2b2f38; }
+  .hero img{ width:100%; height:240px; object-fit:cover; display:block; }
+  .hero .veil{ position:absolute; left:0; top:0; right:0; bottom:0;
+    background:rgba(15,16,19,.72); }
+  .hero .inner{ position:absolute; left:24px; bottom:20px; right:24px; }
+  .hero h1{ font-size:26px; margin:0 0 6px; }
+  .hero .desc{ color:#c9ccd3; font-size:13px; max-width:600px; }
+  .back{ position:absolute; left:16px; top:16px; }
+  .info{ display:inline-block; vertical-align:top; width:260px; margin:0 12px 12px 0;
+    background:#1e2025; border:1px solid #2c2f37; border-radius:10px; padding:12px 14px; font-size:15px; }
+  .info .k{ color:#8a8f9a; font-size:12px; }
+  .info .v{ word-break:break-all; }
+  .verrow{ background:#1e2025; border:1px solid #2c2f37; border-radius:10px; padding:12px 14px; margin-bottom:8px; }
+  .verrow.cur{ border-color:#a37b2c; }
+  .verrow .v{ font-weight:700; font-size:15px; margin-right:12px; }
+  .verrow .d{ color:#8a8f9a; font-size:12.5px; }
+  .pill{ color:#d9a441; border:1px solid #a37b2c; border-radius:11px; padding:1px 8px; font-size:11px; margin-left:6px; }
+
+  /* 设置 */
+  .field{ border-top:1px solid #2c2f37; padding:12px 0; }
+  .field .label{ display:inline-block; width:170px; vertical-align:top; }
+  .field .label .tip{ display:block; color:#6b7078; font-size:11.5px; }
+  .field .ctl{ display:inline-block; vertical-align:top; }
+  input.text{ background:#1e2025; border:1px solid #2c2f37; border-radius:8px; padding:8px 12px;
+    color:#e8e6e1; font-size:13px; width:380px; }
+  .sw{ display:inline-block; width:44px; height:22px; border-radius:11px; background:#a37b2c; vertical-align:middle; }
+  .sw::after{ content:""; display:block; }
+
+  .empty{ border:1px dashed #2c2f37; border-radius:14px; background:#1e2025;
+    text-align:center; padding:70px 20px; }
+  .empty .big{ font-size:46px; color:#8a8f9a; }
+
+  .banner{ border-radius:10px; padding:10px 14px; font-size:13px; margin-bottom:16px; }
+  .banner.warn{ background:#2a2416; border:1px solid #a37b2c; color:#e8c884; }
+  .banner.err{ background:#2b1c1c; border:1px solid #e05c5c; color:#f0a3a3; }
+
+  table{ border-collapse:collapse; }
+  td,th{ text-align:left; padding:4px 12px 4px 0; font-size:13px; }
+  .shot{ display:inline-block; width:360px; height:200px; margin:0 12px 12px 0; border:1px solid #2c2f37; border-radius:10px; overflow:hidden; background:#26282f; }
+  .shot img{ width:360px; height:200px; object-fit:cover; display:block; }
+</style>
+</head>
+<body>
+
+<div class="proto">
+  <b>界面原型</b>
+  <button onclick="show('s-library')">游戏库</button>
+  <button onclick="show('s-detail')">游戏详情</button>
+  <button onclick="show('s-settings')">设置</button>
+  <button onclick="show('s-empty')">空状态</button>
+  <button onclick="show('s-offline')">离线提示</button>
+  <button onclick="show('s-install')">安装进度</button>
+  <span class="hint">仅用于评审交互与版式，非最终实现</span>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ 游戏库 ============ -->
+  <div id="s-library" class="sc">
+    <h2>游戏库 <span class="muted small">共 3 款 · 已安装 1 款</span></h2>
+    <div class="grid">
+      <div class="card">
+        <div class="cover">
+          <img src="assets/cover.png" onerror="this.style.display='none'" alt="" />
+          <span class="badge new">可更新</span>
+        </div>
+        <div class="body">
+          <div class="title">宿舍大富翁</div>
+          <div class="sub">宿舍主题的大富翁棋牌游戏，支持 1~4 人联机。</div>
+          <div class="meta"><span>已装 0.12.0</span><span>最新 0.13.1</span></div>
+        </div>
+        <div class="actions">
+          <button>打开目录</button>
+          <button class="primary" onclick="show('s-install')">更新到 0.13.1</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cover"><div class="ph">🎯</div><span class="badge ok">已是最新</span></div>
+        <div class="body">
+          <div class="title">弹珠工坊</div>
+          <div class="sub">示例：第二款游戏的卡片样式（占位）。</div>
+          <div class="meta"><span>已装 1.4.0</span><span>最新 1.4.0</span></div>
+        </div>
+        <div class="actions">
+          <button>打开目录</button>
+          <button class="primary" onclick="show('s-detail')">启动</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="cover"><div class="ph">🧩</div><span class="badge">未安装</span></div>
+        <div class="body">
+          <div class="title">像素密室</div>
+          <div class="sub">示例：未安装状态的卡片样式（占位）。</div>
+          <div class="meta"><span>最新 0.9.0</span><span>约 42 MB</span></div>
+        </div>
+        <div class="actions">
+          <button onclick="show('s-detail')">详情</button>
+          <button class="primary" onclick="show('s-install')">安装</button>
+        </div>
+      </div>
+      <div class="card ghostcard">
+        <div class="big">＋</div>
+        新游戏接入后自动出现在这里
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 游戏详情 ============ -->
+  <div id="s-detail" class="sc">
+    <div class="hero">
+      <img src="assets/shot1.png" onerror="this.style.display='none'" alt="" />
+      <div class="veil"></div>
+      <button class="back" onclick="show('s-library')">← 返回</button>
+      <div class="inner">
+        <h1>宿舍大富翁 <span class="badge new">可更新</span></h1>
+        <div class="desc">用 Godot 4.6 制作的宿舍主题大富翁：56 格棋盘铺在宿舍桌上，转盘决定步数，买地、装修、收租、抽事件卡，30 轮后身家最高者赢。</div>
+        <div style="margin-top:12px">
+          <button class="primary" onclick="show('s-install')">更新到 0.13.1</button>
+          <button>打开安装目录</button>
+          <button class="danger">卸载…</button>
+        </div>
+      </div>
+    </div>
+
+    <h3>概览</h3>
+    <div>
+      <span class="info"><span class="k">最新版本</span><br><span class="v">0.13.1</span></span>
+      <span class="info"><span class="k">已安装</span><br><span class="v">0.12.0（旧）</span></span>
+      <span class="info"><span class="k">可执行文件</span><br><span class="v">DormMonopoly.exe</span></span>
+      <span class="info"><span class="k">安装位置</span><br><span class="v">…\games\dorm-monopoly\versions\0.12.0</span></span>
+    </div>
+    <p class="muted small">存档与设置位于 %APPDATA%\Godot\app_userdata 下，切换版本不会丢失。</p>
+
+    <h3>版本历史</h3>
+    <div class="verrow cur">
+      <span class="v">0.12.0</span><span class="pill">当前</span>
+      <span class="d">2026-10-07 · 52.3 MB</span>
+      <span style="float:right"><button disabled>已安装</button></span>
+    </div>
+    <div class="verrow">
+      <span class="v">0.13.1</span>
+      <span class="d">2026-10-07 · 55.0 MB</span>
+      <span style="float:right"><button class="primary" onclick="show('s-install')">安装此版本</button></span>
+    </div>
+    <div class="verrow">
+      <span class="v">0.13.0</span>
+      <span class="d">2026-10-07 · 55.0 MB</span>
+      <span style="float:right"><button>安装此版本</button></span>
+    </div>
+
+    <h3>截图</h3>
+    <div class="grid">
+      <span class="shot"><img src="assets/shot1.png" onerror="this.style.display='none'" alt="" /></span>
+      <span class="shot"><img src="assets/shot2.png" onerror="this.style.display='none'" alt="" /></span>
+    </div>
+  </div>
+
+  <!-- ============ 设置 ============ -->
+  <div id="s-settings" class="sc">
+    <h2>设置</h2>
+    <h3>常规</h3>
+    <div class="field">
+      <div class="label">安装根目录<span class="tip">默认 %LOCALAPPDATA%\DormGameHub</span></div>
+      <div class="ctl">
+        <input class="text" value="D:\Games\DormGameHub" readonly />
+        <button>选择…</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="label">并发下载数<span class="tip">同时下载的任务上限</span></div>
+      <div class="ctl"><input class="text" style="width:80px" value="2" /></div>
+    </div>
+    <h3>更新源</h3>
+    <div class="field">
+      <div class="label">清单 URL<span class="tip">留空则只用内置清单</span></div>
+      <div class="ctl"><input class="text" placeholder="https://raw.githubusercontent.com/…/manifest.json" /></div>
+    </div>
+    <div class="field">
+      <div class="label">代理</div>
+      <div class="ctl"><input class="text" placeholder="http://127.0.0.1:7890" /></div>
+    </div>
+    <div class="field">
+      <div class="label">自动检查更新</div>
+      <div class="ctl"><span class="sw" onclick="this.style.background=this.style.background=='rgb(44, 47, 55)'?'#a37b2c':'#2c2f37'"></span></div>
+    </div>
+    <div class="field">
+      <div class="label">启动器自动更新</div>
+      <div class="ctl"><span class="sw" onclick="this.style.background=this.style.background=='rgb(44, 47, 55)'?'#a37b2c':'#2c2f37'"></span></div>
+    </div>
+    <h3>关于</h3>
+    <div class="field">
+      <div class="label">启动器版本</div>
+      <div class="ctl"><span class="muted">v0.1.0</span> <button>检查更新</button> <button>打开数据目录</button></div>
+    </div>
+  </div>
+
+  <!-- ============ 空状态 ============ -->
+  <div id="s-empty" class="sc">
+    <div class="empty">
+      <div class="big">📦</div>
+      <h3>游戏库还是空的</h3>
+      <p class="muted">清单里暂时没有可用游戏。点「刷新清单」重新获取。</p>
+      <button class="primary">↻ 刷新清单</button>
+    </div>
+  </div>
+
+  <!-- ============ 离线提示 ============ -->
+  <div id="s-offline" class="sc">
+    <h2>游戏库</h2>
+    <div class="banner warn">
+      ⚠ 远程清单拉取失败，正在使用<b>内置清单</b>（可能不是最新）。 <button>重试</button>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="cover"><div class="ph">🎲</div><span class="badge">未安装</span></div>
+        <div class="body">
+          <div class="title">宿舍大富翁</div>
+          <div class="sub">宿舍主题的大富翁棋牌游戏，支持 1~4 人联机。</div>
+          <div class="meta"><span>最新 0.13.1</span><span>55 MB</span></div>
+        </div>
+        <div class="actions"><button class="primary" onclick="show('s-install')">安装</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 安装进度 ============ -->
+  <div id="s-install" class="sc">
+    <h2>安装进度</h2>
+    <div style="max-width:520px;background:#1e2025;border:1px solid #3a3e48;border-radius:14px;padding:20px">
+      <h3 style="margin-top:0">正在安装 宿舍大富翁</h3>
+      <div class="muted small">DormMonopoly_v0.13.1.zip</div>
+      <div style="height:10px;background:#2f323b;border-radius:5px;margin:16px 0 8px;overflow:hidden">
+        <div style="height:10px;width:62%;background:#d9a441"></div>
+      </div>
+      <div class="small muted" style="overflow:hidden">
+        <span>下载中… 62%</span>
+        <span style="float:right">34.1 MB / 55.0 MB · 4.6 MB/s</span>
+      </div>
+      <div style="margin-top:18px;text-align:right">
+        <button>后台运行</button>
+        <button class="danger">取消</button>
+      </div>
+    </div>
+    <p class="muted small">完成后按钮变为「启动」；校验失败会中止并提示。</p>
+  </div>
+
+</div>
+
+<script>
+  // 只做一件事：切换显示哪个 .sc 区块。
+  // 如果脚本被禁用，所有 .sc 默认都是可见的（不会出现空白）。
+  function show(id){
+    var list = document.getElementsByClassName('sc');
+    for(var i=0;i<list.length;i++){
+      list[i].style.display = (list[i].id === id) ? 'block' : 'none';
+    }
+    window.scrollTo(0,0);
+  }
+  show('s-library');
+  // 支持 #s-detail / #s-settings 等直链（也方便截图）
+  (function(){
+    var h = location.hash.replace('#','');
+    if(h){ show(h); }
+  })();
+</script>
+</body>
+</html>

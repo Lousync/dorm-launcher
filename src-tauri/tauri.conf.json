@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "宿舍游戏库",
+  "version": "0.1.0",
+  "identifier": "com.lousync.dormhub",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "宿舍游戏库",
+        "width": 1120,
+        "height": 720,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "createUpdaterArtifacts": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ3NTQzNjAxQTkyQzU5M0EKUldRNldTeXBBVFpVUjRNWDVYdG5TdVk5TjVmeDlLeHlWK0hYT3dvc0lINDNSbTZ3eFRFUURoY2YK",
+      "endpoints": [
+        "https://github.com/Lousync/dorm-launcher/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}
