@@ -78,7 +78,7 @@ export function Detail() {
                 if (game.status === "upToDate") {
                   launchGame(game.id);
                 } else if (game.latestVersion) {
-                  startInstall(game.id, game.latestVersion);
+                  startInstall(game.id, game.latestVersion, { latest: true });
                 }
               }}
             >

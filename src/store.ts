@@ -81,7 +81,11 @@ interface LauncherState {
   closeToast: () => void;
   clearError: () => void;
 
-  startInstall: (gameId: string, version: string) => Promise<void>;
+  startInstall: (
+    gameId: string,
+    version: string,
+    opts?: { latest?: boolean },
+  ) => Promise<void>;
   cancelInstall: (taskId: string) => Promise<void>;
   clearFinished: () => void;
 
@@ -262,13 +266,36 @@ export const useLauncher = create<LauncherState>((set, get) => ({
     set({ error: null });
   },
 
-  async startInstall(gameId, version) {
-    const taskId = `${gameId}@${version}`;
+  async startInstall(gameId, version, opts) {
+    // 安装前先强制刷新源头：拉远程清单 + 动态解析最新 release，
+    // 保证拿到真正的「最新版」以及最新的下载链接 / 校验值。
+    set({ refreshing: true, error: null });
+    try {
+      const catalog = await api.getCatalog(true);
+      set({ catalog });
+    } catch {
+      // 刷新失败（离线等）不阻断安装，退回现有 / 缓存清单继续。
+    } finally {
+      set({ refreshing: false });
+    }
+
+    // 决定真正要装的版本：`latest` 意图 = 装刷新后的最新版；
+    // 指定历史版本仍存在则尊重用户选择，已不存在时退回最新版。
+    const game = get().catalog?.games.find((g) => g.id === gameId);
+    const freshLatest = game?.latestVersion ?? null;
+    const requestedExists =
+      !!game &&
+      (game.latestVersion === version ||
+        game.versions.some((v) => v.version === version));
+    const target =
+      (opts?.latest || !requestedExists) && freshLatest ? freshLatest : version;
+
+    const taskId = `${gameId}@${target}`;
     set((s) => ({
       tasks: { ...s.tasks, [taskId]: initTask(taskId) },
     }));
     try {
-      await api.installGame(gameId, version);
+      await api.installGame(gameId, target);
       get().showToast("已加入下载队列");
     } catch (e) {
       set((s) => ({

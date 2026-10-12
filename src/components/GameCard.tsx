@@ -30,7 +30,7 @@ export function GameCard({ game }: { game: GameView }) {
       showToast("清单里没有可安装的版本");
       return;
     }
-    startInstall(game.id, game.latestVersion);
+    startInstall(game.id, game.latestVersion, { latest: true });
   };
 
   return (
